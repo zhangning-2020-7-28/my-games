@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+     *{
+         margin: 0;
+         padding: 0;
+     }
+
+    </style>
+</head>
+<body>
+    <canvas id="box" width="800px" height="600px"></canvas>
+</body>
+<script>
+      var str = location.search;
+      if (str=="") {
+          location.href = "index.html?level=0";
+      }
+      var level = str.substring(str.indexOf("=")+1);
+   
+    /** @type {HTMLCanvasElement} */
+     var c = document.getElementById("box");
+     var ctx = c.getContext("2d");
+     var levelArr = [
+         {"roteNum":3,"waitNum":4,"speed":80},
+         {"roteNum":3,"waitNum":5,"speed":60},
+         {"roteNum":4,"waitNum":6,"speed":40},
+         {"roteNum":4,"waitNum":7,"speed":30},
+         {"roteNum":5,"waitNum":7,"speed":20},
+         {"roteNum":5,"waitNum":8,"speed":20},
+         {"roteNum":6,"waitNum":8,"speed":10}
+     ];
+     var clientX = 300;
+     var clientY = 200;
+     var ballLenth = 130;
+     var rotes = [];
+     var num = levelArr[level-1].roteNum;
+     for(var i=1;i<=num;i++){
+         var angle = 360/num*i;
+         rotes.push({"angle":angle,"id":""})
+     }
+     var waits = [];
+     for(var i=levelArr[level-1].waitNum;i>0;i--){
+         waits.push({"angle":90,"id":i})
+     }
+     function draw(){
+         //大球
+         ctx.beginPath();
+         ctx.arc(clientX,clientY,30,0,360);
+         ctx.fill();
+         ctx.closePath();
+         ctx.globalCompositeOperation="source-over";
+         ctx.beginPath();
+         ctx.textAlign = "center";
+         ctx.font = "40px sans-serif";
+         ctx.textBaseline = "middle";
+         ctx.strokeStyle = "#EED5B7";
+         ctx.fillStyle = "#EED5B7";
+         ctx.fillText(level, clientX,clientY+5);
+         ctx.strokeText(level, clientX,clientY+5);  
+         ctx.closePath(); 
+         ctx.globalCompositeOperation="destination-over";
+      
+        
+     }
+     function spin(deg){
+           //小球以及线
+        
+           for(var i=0;i<rotes.length;i++){    
+            ctx.fillStyle = "#000";
+            ctx.strokeStyle = "#000"; 
+            var x=clientX+ballLenth*Math.cos(rotes[i].angle*Math.PI/180);
+            var y=clientY+ballLenth*Math.sin(rotes[i].angle*Math.PI/180);
+             ctx.beginPath(); 
+             ctx.moveTo(clientX,clientY);
+             ctx.lineTo(x,y)
+             ctx.closePath();
+             ctx.stroke();
+             ctx.beginPath();
+             ctx.arc(x,y,10,0,360);
+             ctx.closePath();
+             ctx.fill(); 
+             
+             if (rotes[i].id!="") {
+                ctx.save();
+                ctx.globalCompositeOperation="source-over";
+                ctx.beginPath();
+                ctx.textAlign = "center";
+                ctx.font = "15px sans-serif";
+               ctx.textBaseline = "middle";
+                ctx.strokeStyle = "#fff";
+                ctx.fillStyle = "#fff";
+                ctx.fillText(rotes[i].id, x,y);
+                ctx.strokeText(rotes[i].id,x,y); 
+                ctx.closePath();
+                ctx.restore();
+             }
+            
+             rotes[i].angle=rotes[i].angle+deg>360?rotes[i].angle+deg-360:rotes[i].angle+deg;
+            }   
+
+     }
+     function waiteball(){
+          for(var i=0;i<waits.length;i++){
+            ctx.beginPath();
+            ctx.arc(clientX,400+i*25,10,0,360);
+            ctx.fill();
+            ctx.closePath();
+            ctx.save();
+            ctx.globalCompositeOperation="source-over";
+            ctx.beginPath();
+            ctx.textAlign = "center";
+            ctx.font = "15px sans-serif";
+            ctx.textBaseline = "middle";
+            ctx.strokeStyle = "#fff";
+            ctx.fillStyle = "#fff";
+            ctx.fillText(waits[i].id, clientX,402+i*25);
+            ctx.strokeText(waits[i].id, clientX,402+i*25);  
+            ctx.closePath();
+            ctx.restore();
+          }
+          
+     }
+     move();
+     function move(){    
+         ctx.clearRect(0,0,800,600);
+         draw();
+         spin(2);
+         waiteball();
+     }
+     setInterval(function(){
+        move()
+     },levelArr[level-1].speed)
+         document.body.onclick = function(){
+             var konck = false;
+             for(var i=0;i<rotes.length;i++){
+                 if (Math.abs(rotes[i].angle-90)<10) {
+                     konck = true;
+                 }
+             }
+             if (!konck) {
+                 rotes.push(waits[0]);
+                 if (waits.length==0) {
+                     alert("闯关成功！");
+                     location.href = "index.html?level="+level;
+                 }
+                 waits.splice(0,1);
+               
+             }
+             else{
+                 alert("闯关失败！");
+                 location.href = "index.html?level="+(level-1);
+             }
+
+         }
+</script>
+</html>

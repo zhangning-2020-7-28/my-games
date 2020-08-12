@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+     *{
+         margin: 0;
+         padding: 0;
+     }
+     body,html{
+         width: 100%;
+         height: 100%;
+     }
+     body{
+         background: url("img/11.jpg") 0 0 no-repeat;
+         background-size: cover;
+         overflow: hidden;
+     }
+     h2{
+         width: 100%;
+         text-align: center;
+         margin-top: 220px;
+     }
+     #box{
+         position: fixed;
+         padding: 10px 25px;
+         border-radius: 10px;
+         border: 1px solid #ccc;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50% , -50%);
+         text-align: center;
+         cursor: pointer;
+     }
+    </style>
+</head>
+<body>
+    <h2>见缝插针小游戏</h2>
+    <div id="box">
+        <img src="img/play.png" alt="">
+        <p></p>
+    </div>
+</body>
+<script>
+    var level ;
+    if (location.search) {
+        var str = location.search;
+        level = str.substring(str.indexOf("=")+1);
+        if (level==7) {
+            level=1
+        }else{
+            level++;
+        }
+    }else{
+        level =1;
+    }
+    document.getElementsByTagName("p")[0].innerHTML = "关卡"+level;
+     document.getElementById("box").onclick = function(){
+           location.href = "game.html?level="+level;
+       }  
+</script>
+</html>
